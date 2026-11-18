@@ -56,13 +56,104 @@ export default function App() {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [loggedInAdminUser, setLoggedInAdminUser] = useState<Partial<User> | null>(null);
 
-  // Core Data Collections
-  const [applications, setApplications] = useState<Application[]>(INITIAL_APPLICATIONS);
-  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
-  const [settings, setSettings] = useState<SystemSettings>(INITIAL_SETTINGS);
-  const [complaints, setComplaints] = useState<Complaint[]>(INITIAL_COMPLAINTS);
-  const [auditLogs, setAuditLogs] = useState<any[]>(INITIAL_AUDIT_LOGS);
-  const [employeeTasks, setEmployeeTasks] = useState<EmployeeTask[]>(INITIAL_TASKS);
+  // Core Data Collections with Safe LocalStorage Persistence
+  const [applications, setApplications] = useState<Application[]>(() => {
+    try {
+      const saved = localStorage.getItem('qtr_zakat_applications_v1');
+      return saved ? JSON.parse(saved) : INITIAL_APPLICATIONS;
+    } catch {
+      return INITIAL_APPLICATIONS;
+    }
+  });
+  const [users, setUsers] = useState<User[]>(() => {
+    try {
+      const saved = localStorage.getItem('qtr_zakat_users_v1');
+      return saved ? JSON.parse(saved) : INITIAL_USERS;
+    } catch {
+      return INITIAL_USERS;
+    }
+  });
+  const [settings, setSettings] = useState<SystemSettings>(() => {
+    try {
+      const saved = localStorage.getItem('qtr_zakat_settings_v1');
+      return saved ? { ...INITIAL_SETTINGS, ...JSON.parse(saved) } : INITIAL_SETTINGS;
+    } catch {
+      return INITIAL_SETTINGS;
+    }
+  });
+  const [complaints, setComplaints] = useState<Complaint[]>(() => {
+    try {
+      const saved = localStorage.getItem('qtr_zakat_complaints_v1');
+      return saved ? JSON.parse(saved) : INITIAL_COMPLAINTS;
+    } catch {
+      return INITIAL_COMPLAINTS;
+    }
+  });
+  const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('qtr_zakat_audit_logs_v1');
+      return saved ? JSON.parse(saved) : INITIAL_AUDIT_LOGS;
+    } catch {
+      return INITIAL_AUDIT_LOGS;
+    }
+  });
+  const [employeeTasks, setEmployeeTasks] = useState<EmployeeTask[]>(() => {
+    try {
+      const saved = localStorage.getItem('qtr_zakat_tasks_v1');
+      return saved ? JSON.parse(saved) : INITIAL_TASKS;
+    } catch {
+      return INITIAL_TASKS;
+    }
+  });
+
+  // Sync changes to localStorage
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qtr_zakat_applications_v1', JSON.stringify(applications));
+    } catch {
+      // ignore storage quota errors
+    }
+  }, [applications]);
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qtr_zakat_users_v1', JSON.stringify(users));
+    } catch {
+      // ignore
+    }
+  }, [users]);
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qtr_zakat_settings_v1', JSON.stringify(settings));
+    } catch {
+      // ignore
+    }
+  }, [settings]);
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qtr_zakat_complaints_v1', JSON.stringify(complaints));
+    } catch {
+      // ignore
+    }
+  }, [complaints]);
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qtr_zakat_audit_logs_v1', JSON.stringify(auditLogs));
+    } catch {
+      // ignore
+    }
+  }, [auditLogs]);
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qtr_zakat_tasks_v1', JSON.stringify(employeeTasks));
+    } catch {
+      // ignore
+    }
+  }, [employeeTasks]);
 
   // Employee Task Handlers
   const handleAddEmployeeTask = (taskData: Partial<EmployeeTask>) => {
@@ -315,6 +406,7 @@ export default function App() {
       name: user.name || '',
       email: user.email || '',
       phone: user.phone || '',
+      password: user.password || '123456',
       role: user.role || 'SOCIAL_RESEARCHER',
       branchId: 'br-wb',
       branchName: 'المقر العام',
@@ -333,7 +425,11 @@ export default function App() {
       prev.map((u) => {
         if (u.id === userId) {
           const updated = { ...u, ...updatedFields };
-          logAuditAction('تعديل صلاحيات/حالة موظف', u.email, `التحديث: ${JSON.stringify(updatedFields)}`);
+          const safeLogFields = { ...updatedFields };
+          if (safeLogFields.password) {
+            safeLogFields.password = '***';
+          }
+          logAuditAction('تعديل صلاحيات/حالة موظف', u.email, `التحديث: ${JSON.stringify(safeLogFields)}`);
           return updated;
         }
         return u;
@@ -417,11 +513,15 @@ export default function App() {
           {currentView === 'admin' &&
             (!isAdminAuthenticated ? (
               <AdminLoginPage
+                users={users}
                 onLoginSuccess={(u) => {
                   setIsAdminAuthenticated(true);
                   setLoggedInAdminUser(u);
                   if (u.role) setCurrentUserRole(u.role as UserRole);
                   logAuditAction('تسجيل دخول إداري', u.email || 'admin', 'تم تسجيل الدخول بنجاح إلى لوحة التحكم');
+                }}
+                onLoginFailed={(attemptedUser) => {
+                  logAuditAction('محاولة دخول فاشلة', attemptedUser, 'محاولة تسجيل دخول غير ناجحة لبوابة الإدارة');
                 }}
                 onBackToHome={() => setCurrentView('home')}
               />
@@ -514,6 +614,10 @@ export default function App() {
                       logAuditAction('الرد على استفسار/شكوى', id, `تم إرسال الرد الرسمي: ${resp}`);
                     }}
                   />
+                )}
+
+                {activeAdminSubTab === 'audit_logs' && (
+                  <AuditLogModule logs={auditLogs} />
                 )}
               </AdminLayout>
             ))}

@@ -61,7 +61,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const menuItems = [
     { id: 'dashboard', label: 'لوحة المعلومات والملخص', icon: LayoutDashboard },
-    { id: 'employee_tasks', label: 'المهام المعلقة (To-Do)', icon: CheckSquare, badge: 3, badgeColor: 'bg-[#13706A]' },
+    { id: 'employee_tasks', label: 'المهام المعلقة', icon: CheckSquare },
     { id: 'applications', label: 'إدارة الطلبات الشاملة', icon: FileText, badge: applications.length },
     { id: 'urgent', label: 'الطلبات العاجلة والطارئة', icon: AlertTriangle, badge: urgentCount, badgeColor: 'bg-red-500' },
     { id: 'pending_docs', label: 'طلبات تحتاج استكمال', icon: Clock, badge: pendingDocsCount, badgeColor: 'bg-amber-500' },
@@ -70,6 +70,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     { id: 'reports', label: 'مركز التقارير والإحصائيات', icon: BarChart2 },
     { id: 'users_roles', label: 'المستخدمون والصلاحيات', icon: Users },
     { id: 'content_mgmt', label: 'إدارة محتوى نموذج الطلب', icon: Settings },
+    { id: 'audit_logs', label: 'سجل الرقابة والأمان', icon: Clock },
   ];
 
   return (

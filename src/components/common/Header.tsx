@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="flex items-center gap-4">
             <span className="text-teal-100/90 hidden md:inline">
-              الزكاة تنمية وتمكين • خدمة المستفيدين والتبرع المباشر
+              خدمات المستفيدين واستقبال طلبات الزكاة والصدقات
             </span>
             <a
               href="tel:+97444000000"

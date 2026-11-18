@@ -46,8 +46,10 @@ export const UsersAndRolesModule: React.FC<UsersAndRolesModuleProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [role, setRole] = useState<UserRole>('SOCIAL_RESEARCHER');
   const [branch, setBranch] = useState('المقر العام');
+  const [editingPassword, setEditingPassword] = useState('');
 
   // Role Definitions & Arabic Labels
   const roleDetails: {
@@ -184,9 +186,10 @@ export const UsersAndRolesModule: React.FC<UsersAndRolesModuleProps> = ({
     if (!name || !email) return;
 
     onAddUser({
-      name,
-      email,
-      phone: phone || '0599000000',
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim() || '0599000000',
+      password: newPassword.trim() || '123456',
       role,
       branchId: 'br-wb',
       branchName: branch,
@@ -200,6 +203,7 @@ export const UsersAndRolesModule: React.FC<UsersAndRolesModuleProps> = ({
     setName('');
     setEmail('');
     setPhone('');
+    setNewPassword('');
     alert(`تم إحداث حساب الموظف (${name}) بنجاح وتعيين دور (${roleDetails[role]?.label}).`);
   };
 
@@ -548,17 +552,16 @@ export const UsersAndRolesModule: React.FC<UsersAndRolesModuleProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">كلمة المرور الأولية للحساب</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">كلمة المرور الخاصة بالحساب *</label>
                 <div className="relative">
                   <input
-                    type="text"
-                    disabled
-                    value="123456"
-                    className="w-full bg-slate-100 border border-slate-200 p-3 rounded-2xl text-xs font-bold text-slate-700 font-mono"
+                    type="password"
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="أدخل كلمة مرور قوية للحساب..."
+                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#13706A] focus:bg-white focus:outline-none font-mono"
                   />
-                  <span className="absolute left-3 top-3 text-[10px] text-amber-700 font-bold bg-amber-100 px-2 py-0.5 rounded-lg">
-                    كلمة مرور افتراضية
-                  </span>
                 </div>
               </div>
             </div>
@@ -811,23 +814,48 @@ export const UsersAndRolesModule: React.FC<UsersAndRolesModuleProps> = ({
                 <p className="text-slate-600 text-[11px]">{roleDetails[editingUser.role]?.desc}</p>
               </div>
 
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  تعيين كلمة مرور جديدة (اتركه فارغاً للإبقاء على كلمة المرور الحالية):
+                </label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={editingPassword}
+                  onChange={(e) => setEditingPassword(e.target.value)}
+                  placeholder="كلمة مرور جديدة..."
+                  className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-mono text-xs text-slate-800 focus:ring-2 focus:ring-[#13706A] focus:outline-none"
+                />
+              </div>
+
               <div className="flex justify-end gap-2 pt-2 border-t">
                 <button
-                  onClick={() => setEditingUser(null)}
+                  onClick={() => {
+                    setEditingUser(null);
+                    setEditingPassword('');
+                  }}
                   className="px-4 py-2 rounded-xl font-bold bg-slate-100 text-slate-700"
                 >
                   إلغاء
                 </button>
                 <button
                   onClick={() => {
+                    const updatedFields: Partial<User> = { role: editingUser.role };
+                    if (editingPassword.trim()) {
+                      updatedFields.password = editingPassword.trim();
+                    }
                     if (onUpdateUser) {
-                      onUpdateUser(editingUser.id, { role: editingUser.role });
+                      onUpdateUser(editingUser.id, updatedFields);
                     } else {
                       const found = users.find((u) => u.id === editingUser.id);
-                      if (found) found.role = editingUser.role;
+                      if (found) {
+                        found.role = editingUser.role;
+                        if (editingPassword.trim()) found.password = editingPassword.trim();
+                      }
                     }
-                    alert(`تم تحديث دور الموظف (${editingUser.name}) إلى (${roleDetails[editingUser.role]?.label}).`);
+                    alert(`تم تحديث بيانات وصلاحيات (${editingUser.name}) بنجاح.`);
                     setEditingUser(null);
+                    setEditingPassword('');
                   }}
                   className="px-5 py-2 rounded-xl font-bold bg-[#13706A] text-white"
                 >

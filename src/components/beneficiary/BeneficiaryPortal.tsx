@@ -31,22 +31,29 @@ export const BeneficiaryPortal: React.FC<BeneficiaryPortalProps> = ({
   const [grievanceDetails, setGrievanceDetails] = useState('');
   const [grievanceSubmittedMsg, setGrievanceSubmittedMsg] = useState(false);
 
+  const [searchError, setSearchError] = useState<string | null>(null);
+
   const handleSearchLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchPhoneOrCode.trim()) return;
+    setSearchError(null);
+    const q = searchPhoneOrCode.trim().toLowerCase();
+    if (q.length < 5) {
+      setSearchError('يرجى إدخال رقم الملف الكامل أو رقم الهوية أو رقم الهاتف بشكل صحيح.');
+      return;
+    }
 
     const matched = applicationsList.find(
       (a) =>
-        a.code.toLowerCase().includes(searchPhoneOrCode.toLowerCase()) ||
-        a.phone.includes(searchPhoneOrCode) ||
-        a.nationalId.includes(searchPhoneOrCode)
+        a.code.trim().toLowerCase() === q ||
+        (a.nationalId && a.nationalId.trim().toLowerCase() === q) ||
+        (a.phone && a.phone.trim() === q)
     );
 
     if (matched) {
       setSelectedApp(matched);
       setIsLoggedIn(true);
     } else {
-      alert('لم يتم العثور على طلب مرتبط برقم المتابعة أو رقم الهاتف المدخل. يرجى التأكد من الرقم.');
+      setSearchError('لم يتم العثور على طلب مطابق للبيانات المدخلة. يرجى التأكد من صحة الرقم والمحاولة مرة أخرى.');
     }
   };
 
@@ -103,51 +110,46 @@ export const BeneficiaryPortal: React.FC<BeneficiaryPortalProps> = ({
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-2xl font-black text-slate-900">بوابة المستفيد — الدخول ومتابعة الطلب</h1>
+            <h1 className="text-2xl font-bold text-slate-900">الاستعلام عن حالة الطلب</h1>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              أدخل رقم المتابعة الممنوح لك عند التسجيل أو رقم هاتفك أو رقم الهوية للاستعلام الفوري عن حالة ملفك
+              أدخل رقم الملف الكامل أو رقم الهاتف المسجل أو رقم الهوية للاطلاع على حالة طلبك ومراحل دراسته
             </p>
           </div>
 
-          <form onSubmit={handleSearchLogin} className="space-y-4 max-w-md mx-auto">
+          {searchError && (
+            <div className="max-w-md mx-auto bg-red-50 border border-red-200 text-red-800 text-xs font-medium p-3.5 rounded-2xl">
+              {searchError}
+            </div>
+          )}
+
+          <form onSubmit={handleSearchLogin} autoComplete="off" className="space-y-4 max-w-md mx-auto">
             <div>
               <input
                 type="text"
                 required
+                autoComplete="off"
                 value={searchPhoneOrCode}
-                onChange={(e) => setSearchPhoneOrCode(e.target.value)}
-                placeholder="رقم المتابعة / رقم الهاتف / رقم الهوية"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-center font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                onChange={(e) => {
+                  setSearchPhoneOrCode(e.target.value);
+                  if (searchError) setSearchError(null);
+                }}
+                placeholder="رقم الملف / رقم الهاتف / رقم الهوية"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-center font-mono font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#13706A]"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#13706A] hover:bg-[#0F5D58] text-white py-3.5 rounded-xl font-black text-sm shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#13706A] hover:bg-[#0F5D58] text-white py-3.5 rounded-xl font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Search className="w-4 h-4" />
-              <span>استعلام ومتابعة حالة الطلب</span>
+              <span>بحث عن الطلب</span>
             </button>
           </form>
 
-          {/* Quick code tips if any applications exist */}
-          {applicationsList.length > 0 && (
-            <div className="pt-4 border-t border-slate-100 text-xs text-slate-500 space-y-2 text-right">
-              <span className="font-bold text-slate-700 block">طلبات مسجلة حالياً للاستعلام السريع:</span>
-              <div className="flex flex-wrap gap-2">
-                {applicationsList.slice(0, 4).map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => setSearchPhoneOrCode(a.code)}
-                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono px-3 py-1 rounded-lg text-[11px]"
-                  >
-                    {a.code} ({a.fullName.split(' ')[0]})
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-400">
+            حفاظاً على خصوصية المتقدمين، يتطلب الاستعلام تطابقاً تاماً لرقم الملف أو رقم الهوية الشخصية.
+          </div>
         </div>
       </div>
     );
@@ -160,23 +162,23 @@ export const BeneficiaryPortal: React.FC<BeneficiaryPortalProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="bg-[#13706A] text-white text-xs font-mono font-bold px-3 py-1 rounded-lg">
+              <span className="bg-[#13706A] text-white text-xs font-mono font-semibold px-3 py-1 rounded-lg">
                 {selectedApp.code}
               </span>
-              <span className="text-xs text-slate-500">تاريخ التقديم: {selectedApp.submissionDate}</span>
+              <span className="text-xs text-slate-500">تاريخ التسجيل: {selectedApp.submissionDate}</span>
             </div>
-            <h1 className="text-2xl font-black text-slate-900">{selectedApp.fullName}</h1>
+            <h1 className="text-2xl font-bold text-slate-900">{selectedApp.fullName}</h1>
             <p className="text-xs text-slate-500">
-              {selectedApp.governorate} — {selectedApp.cityTownCamp} | هاتف: {selectedApp.phone}
+              {selectedApp.governorate} - {selectedApp.cityTownCamp} | هاتف: {selectedApp.phone}
             </p>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               onClick={() => setIsLoggedIn(false)}
-              className="text-xs text-slate-600 hover:text-slate-900 bg-slate-100 px-4 py-2 rounded-xl font-bold"
+              className="text-xs text-slate-600 hover:text-slate-900 bg-slate-100 px-4 py-2 rounded-xl font-semibold"
             >
-              خروج وبحث عن طلب آخر
+              بحث عن طلب آخر
             </button>
           </div>
         </div>
@@ -185,13 +187,13 @@ export const BeneficiaryPortal: React.FC<BeneficiaryPortalProps> = ({
         <div className="flex flex-wrap items-center gap-2 border-b border-slate-100">
           <button
             onClick={() => setActivePortalTab('status')}
-            className={`px-4 py-2.5 font-bold text-xs border-b-2 transition-all ${
+            className={`px-4 py-2.5 font-semibold text-xs border-b-2 transition-all ${
               activePortalTab === 'status'
                 ? 'border-[#13706A] text-[#13706A]'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            مسار حالة الطلب التفاعلي
+            مراحل دراسة الطلب
           </button>
 
           <button

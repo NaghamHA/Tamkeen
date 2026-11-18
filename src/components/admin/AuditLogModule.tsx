@@ -31,16 +31,24 @@ export const AuditLogModule: React.FC<AuditLogModuleProps> = ({ logs }) => {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {logs.map((log) => (
-              <tr key={log.id} className="hover:bg-slate-50">
-                <td className="p-3.5 font-mono text-slate-500">{log.timestamp}</td>
-                <td className="p-3.5 font-bold text-slate-800">{log.userName}</td>
-                <td className="p-3.5 text-slate-600">{log.userRole}</td>
-                <td className="p-3.5 font-bold text-[#13706A]">{log.actionType}</td>
-                <td className="p-3.5 font-mono font-bold text-slate-700">{log.targetCode || '---'}</td>
-                <td className="p-3.5 text-slate-600">{log.details}</td>
+            {logs.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-slate-400">
+                  لا توجد حركات مسجلة في سجل الأمان حتى الآن.
+                </td>
               </tr>
-            ))}
+            ) : (
+              logs.map((log) => (
+                <tr key={log.id} className="hover:bg-slate-50">
+                  <td className="p-3.5 font-mono text-slate-500">{log.timestamp}</td>
+                  <td className="p-3.5 font-bold text-slate-800">{log.userName}</td>
+                  <td className="p-3.5 text-slate-600">{log.userRole}</td>
+                  <td className="p-3.5 font-bold text-[#13706A]">{log.actionType}</td>
+                  <td className="p-3.5 font-mono font-bold text-slate-700">{log.resourceCode || (log as any).targetCode || '---'}</td>
+                  <td className="p-3.5 text-slate-600">{log.details}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

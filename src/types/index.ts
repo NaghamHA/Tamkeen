@@ -342,6 +342,8 @@ export interface User {
   name: string;
   email: string;
   phone: string;
+  username?: string;
+  password?: string;
   role: UserRole;
   branchId: string;
   branchName: string;
@@ -406,6 +408,7 @@ export interface Complaint {
   details: string;
   status: 'جديد' | 'قيد المتابعة' | 'تم الرد' | 'مغلق';
   response?: string;
+  responseDetails?: string;
   assignedTo?: string;
   createdAt: string;
 }
