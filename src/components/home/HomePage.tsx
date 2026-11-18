@@ -89,49 +89,76 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="space-y-16 py-6 sm:py-8">
-      {/* Hero Section */}
+      {/* Hero Section with Photographic Humanitarian Background & Layered Brand Gradient */}
       <section className="max-w-7xl mx-auto px-4">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-teal-950 via-[#0F5D58] to-[#13706A] text-white px-6 py-10 sm:px-12 sm:py-14 shadow-xl border border-teal-800/60">
-          {/* Calm ambient background glow shapes */}
-          <div className="absolute -left-20 -top-20 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="relative overflow-hidden rounded-3xl bg-[#0A4642] text-[#FAF6EE] px-5 py-11 sm:px-12 sm:py-16 lg:py-20 shadow-xl border border-teal-800/70">
+          {/* Layer 1: Full-Bleed Photographic Background (background-size: cover + blur(2px) + responsive crop) */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[url('/src/assets/images/hero_volunteers_aid_parcels_1794989785712.jpg')] bg-cover bg-no-repeat bg-[52%_65%] sm:bg-[center_55%] blur-[2px] scale-105 transition-transform duration-700 pointer-events-none"
+          />
 
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-7">
+          {/* Layer 2: Primary Identity Gradient Overlay (75% at edges up to 90% behind central text) */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-b from-[#093D3A]/85 via-[#0F5D58]/80 to-[#0B4B47]/88 sm:bg-gradient-to-r sm:from-[#093D3A]/75 sm:via-[#0F5D58]/88 sm:to-[#093D3A]/75 pointer-events-none"
+          />
+
+          {/* Layer 3: Radial Density Shield directly behind Headline & Description (up to 90% opacity) */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(9,61,58,0.90)_0%,rgba(15,93,88,0.82)_52%,rgba(19,112,106,0.75)_100%)] pointer-events-none"
+          />
+
+          {/* Layer 4: Subtle Warm Golden-Hour Ambient Glow */}
+          <div
+            aria-hidden="true"
+            className="absolute -top-24 left-1/2 -translate-x-1/2 w-[34rem] h-56 bg-amber-300/10 rounded-full blur-3xl pointer-events-none"
+          />
+
+          {/* Layer 5: Foreground Content & High-Contrast CTAs */}
+          <div className="relative z-20 max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
             {/* Institution Header Badge */}
-            <div className="inline-flex flex-col sm:flex-row items-center justify-center gap-3 bg-teal-950/45 backdrop-blur-md px-5 py-3 rounded-3xl border border-white/15 shadow-lg mx-auto">
+            <div className="inline-flex flex-col sm:flex-row items-center justify-center gap-3 bg-[#072F2D]/65 backdrop-blur-md px-5 py-3 rounded-3xl border border-[#FAF6EE]/15 shadow-lg mx-auto">
               <Logo size="md" variant="full" light={true} showSubtitle={true} />
-              <span className="hidden sm:inline-block h-6 w-px bg-white/15"></span>
-              <span className="text-xs font-medium text-amber-200 bg-amber-400/10 border border-amber-300/25 px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
+              <span className="hidden sm:inline-block h-6 w-px bg-[#FAF6EE]/20"></span>
+              <span className="text-xs font-medium text-amber-200 bg-amber-400/15 border border-amber-300/30 px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                 <span>البوابة الإلكترونية لخدمات المستفيدين والزكاة</span>
               </span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-snug text-white">
-              الزكاة تنمية وتمكين.. عطاءٌ يصون الكرامة ويسند الأسر المتعففة
+            {/* Main Headline in Warm Ivory with Brand Accent Highlights */}
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-relaxed sm:leading-snug text-[#FAF6EE] drop-shadow-xs px-1">
+              الزكاة{' '}
+              <span className="text-amber-300">تنمية وتمكين</span>.. عطاءٌ يصون الكرامة ويسند{' '}
+              <span className="text-amber-200 underline decoration-amber-400/40 underline-offset-8">
+                الأسر المتعففة
+              </span>
             </h1>
 
-            {/* Vision Statement Box */}
-            <div className="bg-slate-950/30 border border-white/15 backdrop-blur-md rounded-2xl p-5 sm:p-6 text-center text-teal-50 shadow-inner space-y-2.5 max-w-3xl mx-auto">
+            {/* Description / Mission Box with Enhanced Readability Shield */}
+            <div className="bg-[#062927]/60 border border-[#FAF6EE]/15 backdrop-blur-md rounded-2xl p-5 sm:p-6 text-center text-[#F5F0E6] shadow-lg space-y-2.5 max-w-3xl mx-auto">
               <div className="inline-flex items-center justify-center gap-2 text-amber-300 font-medium text-xs">
                 <span>رسالة مؤسسة الزكاة والصدقات القطرية</span>
               </div>
-              <p className="text-xs sm:text-sm text-teal-50/90 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm md:text-base text-[#F5F0E6]/95 leading-relaxed font-normal">
                 تعمل{' '}
-                <span className="font-semibold text-amber-200">
+                <span className="font-semibold text-amber-300">
                   مؤسسة الزكاة والصدقات القطرية
                 </span>{' '}
-                على استقبال أموال الزكاة والصدقات وصرفها في مصارفها الشرعية، مع العناية بمساندة الأسر المتعففة وتوفير احتياجاتها الأساسية، إلى جانب دعم البرامج التنموية والمشاريع الصغيرة التي تعين الأسر على الاكتفاء الذاتي والاعتماد على النفس بكرامة.
+                على استقبال أموال الزكاة والصدقات وصرفها في مصارفها الشرعية، مع العناية بمساندة{' '}
+                <span className="font-medium text-white">الأسر المتعففة</span> وتوفير احتياجاتها الأساسية، إلى جانب دعم البرامج التنموية والمشاريع الصغيرة التي تعين الأسر على{' '}
+                <span className="font-semibold text-amber-200">الاكتفاء الذاتي</span> والاعتماد على النفس بكرامة.
               </p>
             </div>
 
-            {/* Prominent Action CTAs */}
+            {/* Prominent Action CTAs in Foreground Layer */}
             <div className="pt-2 space-y-4">
-              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5">
+              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5 px-1 sm:px-0">
                 <button
                   onClick={handleApply}
-                  className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 px-8 py-4 rounded-2xl font-semibold text-sm shadow-lg shadow-amber-500/15 transition-all flex items-center justify-center gap-2.5 active:scale-95 border border-amber-300/70 cursor-pointer"
+                  className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 px-8 py-4 rounded-2xl font-semibold text-sm shadow-xl shadow-black/25 transition-all flex items-center justify-center gap-2.5 active:scale-95 border border-amber-300 cursor-pointer"
                 >
                   <FileText className="w-5 h-5 text-slate-950" />
                   <span>تقديم طلب مساعدة</span>
@@ -141,7 +168,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 {onOpenDonateModal && (
                   <button
                     onClick={onOpenDonateModal}
-                    className="w-full sm:w-auto bg-white hover:bg-teal-50 text-[#0F5D58] px-7 py-4 rounded-2xl font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2.5 active:scale-95 border border-white/80 cursor-pointer"
+                    className="w-full sm:w-auto bg-[#FAF6EE] hover:bg-white text-[#0B4B47] px-7 py-4 rounded-2xl font-semibold text-sm shadow-lg shadow-black/20 transition-all flex items-center justify-center gap-2.5 active:scale-95 border border-[#FAF6EE] cursor-pointer"
                   >
                     <HeartHandshake className="w-5 h-5 text-[#13706A]" />
                     <span>التبرع والزكاة</span>
@@ -150,19 +177,19 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 <button
                   onClick={handleTrack}
-                  className="w-full sm:w-auto bg-slate-900/45 hover:bg-slate-900/65 text-teal-100 border border-white/20 px-6 py-4 rounded-2xl font-medium text-xs transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto bg-[#062927]/70 hover:bg-[#062927]/90 text-[#FAF6EE] border border-[#FAF6EE]/25 px-6 py-4 rounded-2xl font-medium text-xs backdrop-blur-xs transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
                 >
-                  <Search className="w-4 h-4 text-emerald-300" />
+                  <Search className="w-4 h-4 text-amber-300" />
                   <span>الاستعلام عن طلب</span>
                 </button>
               </div>
 
-              <div className="inline-flex flex-wrap items-center justify-center gap-4 text-[11px] text-teal-100/85 font-normal">
+              <div className="inline-flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[11px] text-[#F5F0E6]/90 font-normal pt-1">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-300" />
                   <span>التسجيل متاح إلكترونياً بخطوات ميسّرة</span>
                 </span>
-                <span className="hidden sm:inline text-white/30">|</span>
+                <span className="hidden sm:inline text-[#FAF6EE]/30">|</span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
                   <span>تُراجع الطلبات من قِبل لجان البحث المختصة</span>
