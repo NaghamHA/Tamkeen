@@ -1,0 +1,6 @@
+{
+  "name": "مؤسسة الزكاة والصدقات القطرية",
+  "description": "المنصة الإلكترونية الرسمية لمؤسسة الزكاة والصدقات القطرية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

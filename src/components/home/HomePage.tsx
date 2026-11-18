@@ -1,0 +1,731 @@
+import React, { useState } from 'react';
+import { Logo } from '../common/Logo';
+import { SystemSettings, Complaint } from '../../types';
+import {
+  FileText,
+  Search,
+  HeartHandshake,
+  CheckCircle2,
+  FileSearch,
+  Send,
+  ArrowLeft,
+  ShieldAlert,
+  CheckCircle,
+} from 'lucide-react';
+
+interface HomePageProps {
+  settings: SystemSettings;
+  complaints?: Complaint[];
+  onSubmitComplaint?: (cmp: Partial<Complaint>) => void;
+  setActiveTab?: (tab: 'home' | 'apply' | 'track' | 'admin' | 'complaints') => void;
+  onStartApplication?: () => void;
+  onTrackApplication?: () => void;
+  onOpenDonateModal?: () => void;
+  autoScrollToComplaints?: boolean;
+}
+
+export const HomePage: React.FC<HomePageProps> = ({
+  onSubmitComplaint,
+  setActiveTab,
+  onStartApplication,
+  onTrackApplication,
+  onOpenDonateModal,
+  autoScrollToComplaints,
+}) => {
+  const [complaintForm, setComplaintForm] = useState({
+    applicantName: '',
+    nationalId: '',
+    phone: '',
+    relatedApplicationCode: '',
+    type: 'استفسار' as 'استفسار' | 'شكوى' | 'تظلم' | 'طلب إعادة مراجعة',
+    details: '',
+  });
+
+  const [submittedComplaintCode, setSubmittedComplaintCode] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (autoScrollToComplaints) {
+      const el = document.getElementById('complaints-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [autoScrollToComplaints]);
+
+  const handleComplaintSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!complaintForm.applicantName.trim() || !complaintForm.phone.trim() || !complaintForm.details.trim()) {
+      alert('يرجى تعبئة الاسم الكامل ورقم الهاتف وتفاصيل الشكوى أو الاستفسار.');
+      return;
+    }
+
+    const generatedCode = 'CMP-QTR-' + Math.floor(1000 + Math.random() * 9000);
+    if (onSubmitComplaint) {
+      onSubmitComplaint({
+        ...complaintForm,
+        code: generatedCode,
+      });
+    }
+    setSubmittedComplaintCode(generatedCode);
+    setComplaintForm({
+      applicantName: '',
+      nationalId: '',
+      phone: '',
+      relatedApplicationCode: '',
+      type: 'شكوى',
+      details: '',
+    });
+  };
+
+  const handleApply = () => {
+    if (onStartApplication) onStartApplication();
+    else if (setActiveTab) setActiveTab('apply');
+  };
+
+  const handleTrack = () => {
+    if (onTrackApplication) onTrackApplication();
+    else if (setActiveTab) setActiveTab('track');
+  };
+
+  return (
+    <div className="space-y-16 py-6 sm:py-8">
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-teal-950 via-[#0F5D58] to-[#13706A] text-white px-6 py-10 sm:px-12 sm:py-14 shadow-xl border border-teal-800/60">
+          {/* Calm ambient background glow shapes */}
+          <div className="absolute -left-20 -top-20 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-7">
+            {/* Institution Header Badge */}
+            <div className="inline-flex flex-col sm:flex-row items-center justify-center gap-3 bg-teal-950/45 backdrop-blur-md px-5 py-3 rounded-3xl border border-white/15 shadow-lg mx-auto">
+              <Logo size="md" variant="full" light={true} showSubtitle={true} />
+              <span className="hidden sm:inline-block h-6 w-px bg-white/15"></span>
+              <span className="text-xs font-medium text-amber-200 bg-amber-400/10 border border-amber-300/25 px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>المنصة العالمية للتبرع والتمكين الإنساني</span>
+              </span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-snug text-white">
+              الزكاة تنمية وتمكين • أثرٌ يمتد وكرامةٌ تُصان
+            </h1>
+
+            {/* Vision Statement Box */}
+            <div className="bg-slate-950/30 border border-white/15 backdrop-blur-md rounded-2xl p-5 sm:p-6 text-center text-teal-50 shadow-inner space-y-2.5 max-w-3xl mx-auto">
+              <div className="inline-flex items-center justify-center gap-2 text-amber-300 font-medium text-xs">
+                <span>رؤية مؤسسة الزكاة والصدقات القطرية</span>
+              </div>
+              <p className="text-xs sm:text-sm text-teal-50/90 leading-relaxed font-normal">
+                "في قلب مجتمعنا العربي، حيث تتشابك التحديات بأمل التغيير، تقف{' '}
+                <span className="font-semibold text-amber-200 underline decoration-amber-300/50 underline-offset-4">
+                  مؤسسة الزكاة والصدقات القطرية
+                </span>{' '}
+                كحصن منيع يدافع عن قيم العدالة والإنسانية. مدفوعون بإيمان راسخ بأن{' '}
+                <span className="font-semibold text-white">"الزكاة تنمية وتمكين"</span>، نلتزم ليس فقط بتوزيع الأموال،
+                بل بزرع بذور التغيير الإيجابي في المجتمع العربي. نعمل على تحويل الزكاة من واجب إلى استراتيجية تمكينية
+                تفتح آفاقًا جديدة للتنمية والازدهار، مع الحفاظ على كرامة الإنسان وتحقيق العدالة الاجتماعية."
+              </p>
+            </div>
+
+            {/* Prominent Action CTAs */}
+            <div className="pt-2 space-y-4">
+              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3.5">
+                <button
+                  onClick={handleApply}
+                  className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 px-8 py-4 rounded-2xl font-semibold text-sm shadow-lg shadow-amber-500/15 transition-all flex items-center justify-center gap-2.5 active:scale-95 border border-amber-300/70 cursor-pointer"
+                >
+                  <FileText className="w-5 h-5 text-slate-950" />
+                  <span>تقديم طلب مساعدة جديد</span>
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+
+                {onOpenDonateModal && (
+                  <button
+                    onClick={onOpenDonateModal}
+                    className="w-full sm:w-auto bg-white hover:bg-teal-50 text-[#0F5D58] px-7 py-4 rounded-2xl font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2.5 active:scale-95 border border-white/80 cursor-pointer"
+                  >
+                    <HeartHandshake className="w-5 h-5 text-[#13706A]" />
+                    <span>تبرع الآن (ساهم في التمكين)</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={handleTrack}
+                  className="w-full sm:w-auto bg-slate-900/45 hover:bg-slate-900/65 text-teal-100 border border-white/20 px-6 py-4 rounded-2xl font-medium text-xs transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                >
+                  <Search className="w-4 h-4 text-emerald-300" />
+                  <span>متابعة طلب سابق</span>
+                </button>
+              </div>
+
+              <div className="inline-flex flex-wrap items-center justify-center gap-4 text-[11px] text-teal-100/85 font-normal">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-300" />
+                  <span>تقديم إلكتروني مباشر في مرحلتين مبسطتين</span>
+                </span>
+                <span className="hidden sm:inline text-white/30">•</span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>دون الحاجة لمرفقات أو فواتير مسبقة</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About & Mission Advanced Bento Grid with Glassmorphism & Custom SVGs */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="relative rounded-[2.25rem] p-6 sm:p-10 bg-gradient-to-br from-[#0F5D58]/[0.05] via-teal-50/60 to-amber-50/40 border border-teal-900/10 shadow-xs overflow-hidden space-y-8">
+          {/* Ambient Blurred Orbs for True Glassmorphism Refraction */}
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#13706A]/12 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#1E759A]/12 blur-3xl pointer-events-none" />
+
+          {/* Section Header */}
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-teal-900/10 pb-5">
+            <div>
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-[#0F5D58] bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-teal-200/80 shadow-2xs">
+                <span>الهوية المؤسسية والمنهج التنموي</span>
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mt-2.5">
+                من نحن ورسالتنا في التمكين الإنساني
+              </h2>
+            </div>
+            <p className="text-xs text-slate-600 font-normal bg-white/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/80">
+              منظومة عمل مؤسسية تجمع بين الاستجابة الإنسانية العاجلة والتمكين المستدام
+            </p>
+          </div>
+
+          {/* 12-Column Advanced Bento Grid */}
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+            {/* Card 1: من نحن (About Us) - 6 Cols */}
+            <div className="lg:col-span-6 group relative overflow-hidden rounded-3xl bg-white/75 backdrop-blur-xl border border-white/90 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(15,93,88,0.06)] hover:shadow-[0_22px_45px_rgb(19,112,106,0.12)] hover:border-[#13706A]/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between p-7 sm:p-8">
+              {/* Subtle Decorative SVG Watermark */}
+              <svg
+                className="absolute -left-8 -top-8 w-44 h-44 text-[#13706A]/[0.04] group-hover:text-[#13706A]/[0.08] group-hover:scale-105 transition-all duration-500 pointer-events-none"
+                viewBox="0 0 100 100"
+                fill="none"
+              >
+                <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="4" strokeDasharray="6 6" />
+                <polygon points="50,12 88,50 50,88 12,50" stroke="currentColor" strokeWidth="3" />
+                <circle cx="50" cy="50" r="18" stroke="currentColor" strokeWidth="3" />
+              </svg>
+
+              <div className="space-y-6 relative z-10">
+                {/* Header with Custom Elegant SVG Icon */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0F5D58] to-[#13706A] p-0.5 shadow-md shadow-teal-900/10 group-hover:scale-105 transition-transform duration-300 shrink-0">
+                      <div className="w-full h-full bg-gradient-to-br from-[#0F5D58] to-[#13706A] rounded-[14px] flex items-center justify-center">
+                        <svg className="w-8 h-8 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" className="text-teal-200/25" fill="currentColor" />
+                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                          <path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#13706A] bg-teal-50/90 px-2.5 py-0.5 rounded-lg border border-teal-200/70">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#13706A]" />
+                        <span>الريادة والحوكمة المؤسسية</span>
+                      </span>
+                      <h3 className="text-2xl font-bold text-slate-800 mt-1">من نحن</h3>
+                    </div>
+                  </div>
+
+                  <span className="text-[11px] font-mono font-medium text-[#13706A] bg-teal-50/80 backdrop-blur-xs px-3 py-1 rounded-xl border border-teal-200/60">
+                    01 / ABOUT
+                  </span>
+                </div>
+
+                {/* Glassmorphic Text Box */}
+                <div className="bg-white/70 backdrop-blur-md border border-teal-100/90 border-r-4 border-r-[#13706A] rounded-2xl p-4 sm:p-5 shadow-2xs">
+                  <p className="text-sm text-slate-700 leading-relaxed font-normal">
+                    مؤسسة الزكاة والصدقات القطرية مؤسسة إنسانية تنموية قائمة على مبادئ الشفافية والحوكمة. نهدف إلى إدارة
+                    واستقبال أموال الزكاة والصدقات وتوجيهها نحو برامج التمكين الاقتصادي والاجتماعي لدعم المستحقين والنهوض
+                    بالمجتمعات.
+                  </p>
+                </div>
+
+                {/* Inner 3-Column Sub-Grid with SVG Icons */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    {
+                      title: 'الشفافية المالية',
+                      sub: 'تدقيق وتوثيق معتمد',
+                      svg: (
+                        <svg className="w-4 h-4 text-[#13706A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                          <path d="m9 12 2 2 4-4" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      title: 'حوكمة مؤسسية',
+                      sub: 'معايير استحقاق عادلة',
+                      svg: (
+                        <svg className="w-4 h-4 text-[#13706A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                          <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                          <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      title: 'أثر مجتمعي',
+                      sub: 'وصول مباشر للمستحقين',
+                      svg: (
+                        <svg className="w-4 h-4 text-[#13706A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" />
+                          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                      ),
+                    },
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-teal-50/50 hover:bg-teal-50/90 backdrop-blur-xs border border-teal-200/60 rounded-2xl p-3 text-center transition-all flex flex-col items-center gap-1.5"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-white shadow-2xs border border-teal-100 flex items-center justify-center">
+                        {item.svg}
+                      </div>
+                      <div className="text-xs font-semibold text-slate-800">{item.title}</div>
+                      <div className="text-[10px] text-slate-500 font-normal">{item.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer Badge */}
+              <div className="pt-4 mt-6 border-t border-slate-200/70 flex items-center justify-between text-xs relative z-10">
+                <div className="flex items-center gap-2 text-[#0F5D58] font-medium bg-emerald-50/80 px-3.5 py-1.5 rounded-xl border border-emerald-200/70">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>مؤسسة الزكاة والصدقات القطرية - حوكمة مؤسسية راسخة</span>
+                </div>
+                <span className="text-[11px] font-medium text-slate-400">معتمد رسمياً</span>
+              </div>
+            </div>
+
+            {/* Card 2: رسالتنا التمكينية (Our Empowering Mission) - 6 Cols */}
+            <div className="lg:col-span-6 group relative overflow-hidden rounded-3xl bg-white/75 backdrop-blur-xl border border-white/90 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(30,117,154,0.06)] hover:shadow-[0_22px_45px_rgb(30,117,154,0.12)] hover:border-[#1E759A]/35 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between p-7 sm:p-8">
+              {/* Subtle Decorative SVG Watermark */}
+              <svg
+                className="absolute -left-8 -top-8 w-44 h-44 text-[#1E759A]/[0.04] group-hover:text-[#1E759A]/[0.08] group-hover:scale-105 transition-all duration-500 pointer-events-none"
+                viewBox="0 0 100 100"
+                fill="none"
+              >
+                <path d="M50 8 L88 25 V52 C88 74 71 89 50 95 C29 89 12 74 12 52 V25 L50 8 Z" stroke="currentColor" strokeWidth="3.5" />
+                <circle cx="50" cy="50" r="22" stroke="currentColor" strokeWidth="3" strokeDasharray="5 5" />
+              </svg>
+
+              <div className="space-y-6 relative z-10">
+                {/* Header with Custom Elegant SVG Icon */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1E759A] to-[#13706A] p-0.5 shadow-md shadow-sky-900/10 group-hover:scale-105 transition-transform duration-300 shrink-0">
+                      <div className="w-full h-full bg-gradient-to-br from-[#1E759A] to-[#13706A] rounded-[14px] flex items-center justify-center">
+                        <svg className="w-8 h-8 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" className="text-sky-200/25" fill="currentColor" />
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                          <path d="m9 12 2 2 4-4" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#1E759A] bg-sky-50/90 px-2.5 py-0.5 rounded-lg border border-sky-200/70">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1E759A]" />
+                        <span>استراتيجية التمكين المستدام</span>
+                      </span>
+                      <h3 className="text-2xl font-bold text-slate-800 mt-1">رسالتنا التمكينية</h3>
+                    </div>
+                  </div>
+
+                  <span className="text-[11px] font-mono font-medium text-[#1E759A] bg-sky-50/80 backdrop-blur-xs px-3 py-1 rounded-xl border border-sky-200/60">
+                    02 / MISSION
+                  </span>
+                </div>
+
+                {/* Glassmorphic Text Box */}
+                <div className="bg-white/70 backdrop-blur-md border border-sky-100/90 border-r-4 border-r-[#1E759A] rounded-2xl p-4 sm:p-5 shadow-2xs">
+                  <p className="text-sm text-slate-700 leading-relaxed font-normal">
+                    نؤمن أن المساعدة الحقيقية لا تقف عند حدود الدعم الطارئ، بل تتجاوز ذلك لتحويل المستفيد من متلقٍ للمساعدة إلى
+                    عنصر منتج وفعال بكرامة واستدامة.
+                  </p>
+                </div>
+
+                {/* Inner 3-Column Sub-Grid with SVG Icons */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    {
+                      title: '1. الاستجابة',
+                      sub: 'سد الاحتياج العاجل',
+                      svg: (
+                        <svg className="w-4 h-4 text-[#1E759A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      title: '2. التمكين',
+                      sub: 'تأهيل ودعم الإنتاج',
+                      svg: (
+                        <svg className="w-4 h-4 text-[#1E759A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="m22 7-8.5 8.5-5-5L2 17" />
+                          <path d="M16 7h6v6" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      title: '3. الاستدامة',
+                      sub: 'كرامة واكتفاء ذاتي',
+                      svg: (
+                        <svg className="w-4 h-4 text-[#1E759A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="8" r="6" />
+                          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+                        </svg>
+                      ),
+                    },
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-sky-50/50 hover:bg-sky-50/90 backdrop-blur-xs border border-sky-200/60 rounded-2xl p-3 text-center transition-all flex flex-col items-center gap-1.5"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-white shadow-2xs border border-sky-100 flex items-center justify-center">
+                        {item.svg}
+                      </div>
+                      <div className="text-xs font-semibold text-slate-800">{item.title}</div>
+                      <div className="text-[10px] text-slate-500 font-normal">{item.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Highlighted Core Motto Banner */}
+              <div className="pt-4 mt-6 border-t border-slate-200/70 relative z-10">
+                <div className="flex items-center gap-2.5 text-xs text-emerald-900 bg-gradient-to-l from-emerald-50/90 to-teal-50/80 backdrop-blur-xs p-3.5 rounded-2xl border border-emerald-200/80 shadow-2xs">
+                  <CheckCircle2 className="w-4 h-4 text-[#13706A] shrink-0" />
+                  <span className="font-medium">
+                    تحويل الزكاة من واجب مجرد إلى استراتيجية تمكينية شاملة تزرع الأمل وتصون الكرامة.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 Application Steps with Clear Entry Action */}
+      <section className="max-w-7xl mx-auto px-4 space-y-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+          <div className="space-y-1.5 text-right">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#13706A] bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
+              <FileText className="w-3.5 h-3.5" />
+              <span>دليل المتقدم • ابدأ خطوتك الأولى الآن</span>
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">خطوات تقديم ومتابعة الطلب</h2>
+            <p className="text-sm text-slate-500 font-normal">
+              اضغط على بطاقة الخطوة الأولى أدناه لفتح نموذج التقديم الإلكتروني والبدء فوراً
+            </p>
+          </div>
+          <button
+            onClick={handleApply}
+            className="w-full sm:w-auto bg-[#13706A] hover:bg-[#0F5D58] text-white px-6 py-3.5 rounded-2xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+          >
+            <FileText className="w-4 h-4 text-amber-300" />
+            <span>ابدأ تقديم طلبك من هنا</span>
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            {
+              step: '01',
+              title: 'إنشاء الطلب وإدخال البيانات',
+              desc: 'تعبئة المعلومات الشخصية وبيانات التواصل والعنوان بشكل مباشر وميسر.',
+              icon: FileText,
+              borderAccent: 'border-t-4 border-t-[#13706A] ring-1 ring-[#13706A]/20 bg-gradient-to-b from-teal-50/40 to-white',
+              iconStyle: 'bg-[#13706A] text-white shadow-xs',
+              isActionCard: true,
+              actionLabel: 'اضغط هنا لبدء تقديم الطلب',
+              onClick: handleApply,
+            },
+            {
+              step: '02',
+              title: 'المراجعة والتعهد والتوقيع',
+              desc: 'مراجعة البيانات المدخلة والتوقيع الإلكتروني لاستلام رقم المتابعة الفوري.',
+              icon: Send,
+              borderAccent: 'border-t-4 border-t-amber-500',
+              iconStyle: 'bg-amber-50 text-amber-600',
+              isActionCard: false,
+            },
+            {
+              step: '03',
+              title: 'دراسة وتحديد استحقاق الحالة',
+              desc: 'قيام فريق دراسة الحالات والبحث الميداني بالتقييم والتحقق الشامل.',
+              icon: FileSearch,
+              borderAccent: 'border-t-4 border-t-[#1E759A]',
+              iconStyle: 'bg-sky-50 text-[#1E759A]',
+              isActionCard: false,
+            },
+            {
+              step: '04',
+              title: 'إبلاغك بالقرار والتمكين',
+              desc: 'اعتماد القرار وإبلاغ المتقدم عبر البوابة الإلكترونية برقم المتابعة.',
+              icon: CheckCircle2,
+              borderAccent: 'border-t-4 border-t-emerald-600',
+              iconStyle: 'bg-emerald-50 text-emerald-700',
+              isActionCard: true,
+              actionLabel: 'تتبع حالة طلبك من هنا',
+              onClick: handleTrack,
+            },
+          ].map((item, idx) => {
+            const IconComp = item.icon;
+            return (
+              <div
+                key={idx}
+                onClick={item.onClick}
+                role={item.isActionCard ? 'button' : undefined}
+                tabIndex={item.isActionCard ? 0 : undefined}
+                onKeyDown={
+                  item.isActionCard && item.onClick
+                    ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          item.onClick?.();
+                        }
+                      }
+                    : undefined
+                }
+                className={`clean-card p-6 relative overflow-hidden group flex flex-col justify-between transition-all ${
+                  item.isActionCard ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-[#13706A]' : ''
+                } ${item.borderAccent}`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-11 h-11 ${item.iconStyle} rounded-xl flex items-center justify-center`}>
+                      <IconComp className="w-5 h-5" />
+                    </div>
+                    {idx === 0 ? (
+                      <span className="bg-[#13706A] text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-2xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-300" />
+                        <span>نقطة البداية • قدّم من هنا</span>
+                      </span>
+                    ) : (
+                      <span className="text-3xl font-mono font-bold text-slate-200 group-hover:text-emerald-100 transition-colors">
+                        {item.step}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-semibold text-slate-800 text-base mb-2">{item.title}</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed font-normal">{item.desc}</p>
+                </div>
+
+                {item.isActionCard && (
+                  <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-[#13706A] group-hover:text-[#0F5D58]">
+                    <span>{item.actionLabel}</span>
+                    <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Complaints & Grievances Section on Homepage - Compact Side-by-Side Layout */}
+      <section id="complaints-section" className="max-w-5xl mx-auto px-4">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+          {/* Expressive Visual & Trust Panel */}
+          <div className="lg:col-span-5 bg-gradient-to-b from-[#0F5D58] to-[#0A3F3C] text-white p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden">
+            <div className="space-y-3 relative z-10">
+              <span className="inline-flex items-center gap-1.5 bg-amber-400/15 text-amber-300 border border-amber-400/30 text-[11px] px-3 py-1 rounded-full font-medium">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                <span>بوابة الشفافية والتظلمات</span>
+              </span>
+              <h2 className="text-lg sm:text-xl font-bold text-white leading-snug">
+                صوتك مسموع ومحل اهتمامنا المباشر
+              </h2>
+              <p className="text-xs text-teal-100/90 leading-relaxed font-normal">
+                نستقبل كافة الاستفسارات والتظلمات وطلبات إعادة المراجعة بسرية تامة لضمان وصول الدعم لمستحقيه بأعلى معايير العدالة.
+              </p>
+            </div>
+
+            <div className="my-4 relative z-10 rounded-2xl overflow-hidden border border-white/15 shadow-md bg-[#0A3F3C]">
+              <img
+                src="/src/assets/images/grievance_support_illustration_1794986259458.jpg"
+                alt="مكتب استقبال الاستفسارات والتظلمات والدعم المباشر"
+                referrerPolicy="no-referrer"
+                className="w-full h-48 sm:h-52 object-cover object-center"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-teal-100 relative z-10">
+              <div className="bg-white/10 rounded-xl px-3 py-2 flex items-center gap-1.5 border border-white/10">
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>مراجعة مباشرة</span>
+              </div>
+              <div className="bg-white/10 rounded-xl px-3 py-2 flex items-center gap-1.5 border border-white/10">
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>رقم مرجعي فوري</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Compact Inquiry / Grievance Form Panel */}
+          <div className="lg:col-span-7 p-5 sm:p-6 flex flex-col justify-center space-y-4">
+            <div className="border-b border-slate-100 pb-3 flex items-center justify-between gap-2">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-800">
+                  تقديم استفسار أو تظلم مباشر
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5 font-normal">
+                  أدخل بياناتك وتفاصيل طلبك ليتم تحويله مباشرة للجنة المختصة.
+                </p>
+              </div>
+            </div>
+
+            {submittedComplaintCode && (
+              <div className="bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex items-center justify-between text-xs animate-fade-in">
+                <div className="flex items-center gap-2 text-emerald-900 font-medium">
+                  <CheckCircle className="w-4 h-4 text-emerald-700 shrink-0" />
+                  <span>
+                    تم الإرسال بنجاح! رقم المرجع:{' '}
+                    <strong className="font-mono text-xs underline px-1 font-semibold">{submittedComplaintCode}</strong>
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSubmittedComplaintCode(null)}
+                  className="text-slate-500 hover:text-slate-800 text-[11px]"
+                >
+                  إغلاق
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={handleComplaintSubmit} className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-700 mb-1">الاسم الكامل *</label>
+                  <input
+                    type="text"
+                    required
+                    value={complaintForm.applicantName}
+                    onChange={(e) => setComplaintForm({ ...complaintForm, applicantName: e.target.value })}
+                    placeholder="الاسم الثلاثي أو الرباعي..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-700 mb-1">رقم الهوية / جواز السفر</label>
+                  <input
+                    type="text"
+                    value={complaintForm.nationalId}
+                    onChange={(e) => setComplaintForm({ ...complaintForm, nationalId: e.target.value })}
+                    placeholder="رقم الإثبات الشخصي..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-700 mb-1">رقم الهاتف للتواصل *</label>
+                  <input
+                    type="text"
+                    required
+                    value={complaintForm.phone}
+                    onChange={(e) => setComplaintForm({ ...complaintForm, phone: e.target.value })}
+                    placeholder="059XXXXXXX / +974XXXX"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-700 mb-1">نوع المعاملة *</label>
+                  <select
+                    value={complaintForm.type}
+                    onChange={(e) => setComplaintForm({ ...complaintForm, type: e.target.value as any })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                  >
+                    <option value="استفسار">استفسار عام</option>
+                    <option value="شكوى">شكوى</option>
+                    <option value="تظلم">تظلم وإعادة نظر</option>
+                    <option value="طلب إعادة مراجعة">طلب إعادة مراجعة الملف</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-slate-700 mb-1">رقم الطلب المتعلق به (إن وجد)</label>
+                <input
+                  type="text"
+                  value={complaintForm.relatedApplicationCode}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, relatedApplicationCode: e.target.value })}
+                  placeholder="مثال: QTR-2026-000101"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-slate-700 mb-1">تفاصيل الاستفسار أو التظلم *</label>
+                <textarea
+                  required
+                  rows={3}
+                  value={complaintForm.details}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, details: e.target.value })}
+                  placeholder="يرجى كتابة التفاصيل بوضوح ليتسنى للإدارة مراجعتها والرد عليها..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13706A]"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-[#13706A] hover:bg-[#0F5D58] text-white py-2.5 rounded-xl font-semibold text-xs shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>إرسال الاستفسار / التظلم للإدارة</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* Final Action & Privacy Banner */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="clean-card p-8 text-center space-y-6">
+          <div className="max-w-xl mx-auto space-y-2">
+            <h3 className="text-2xl font-bold text-slate-800">بياناتك محفوظة بسرية تامة</h3>
+            <p className="text-xs text-slate-500 font-normal">
+              تُستخدم جميع البيانات المدخلة والمرفقات حصرياً لأغراض التقييم والتحقق من استحقاق المساعدة من قِبل اللجنة المعتمدة بمؤسسة الزكاة والصدقات القطرية.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            {onOpenDonateModal && (
+              <button
+                onClick={onOpenDonateModal}
+                className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-slate-950 px-8 py-3.5 rounded-xl font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
+              >
+                <HeartHandshake className="w-4 h-4" />
+                <span>تبرع الآن للمشاريع والتمكين</span>
+              </button>
+            )}
+
+            <button
+              onClick={handleApply}
+              className="w-full sm:w-auto bg-[#13706A] hover:bg-[#0F5D58] text-white px-8 py-3.5 rounded-xl font-semibold text-sm shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              <span>تقديم طلب مساعدة</span>
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
