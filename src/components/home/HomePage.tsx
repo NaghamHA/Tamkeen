@@ -12,6 +12,8 @@ import {
   ShieldAlert,
   CheckCircle,
 } from 'lucide-react';
+import heroVolunteersBg from '../../assets/images/hero_volunteers_aid_parcels_1794989785712.jpg';
+import grievanceSupportImg from '../../assets/images/grievance_support_illustration_1794986259458.jpg';
 
 interface HomePageProps {
   settings: SystemSettings;
@@ -92,10 +94,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Hero Section with Photographic Humanitarian Background & Layered Brand Gradient */}
       <section className="max-w-7xl mx-auto px-4">
         <div className="relative overflow-hidden rounded-3xl bg-[#0A4642] text-[#FAF6EE] px-5 py-11 sm:px-12 sm:py-16 lg:py-20 shadow-xl border border-teal-800/70">
-          {/* Layer 1: Full-Bleed Photographic Background (background-size: cover + blur(2px) + responsive crop) */}
-          <div
+          {/* Layer 1: Full-Bleed Photographic Background (object-cover + blur(2px) + responsive crop) */}
+          <img
+            src={heroVolunteersBg}
+            alt=""
             aria-hidden="true"
-            className="absolute inset-0 bg-[url('/src/assets/images/hero_volunteers_aid_parcels_1794989785712.jpg')] bg-cover bg-no-repeat bg-[52%_65%] sm:bg-[center_55%] blur-[2px] scale-105 transition-transform duration-700 pointer-events-none"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover object-[52%_65%] sm:object-[center_55%] blur-[2px] scale-105 transition-transform duration-700 pointer-events-none select-none"
           />
 
           {/* Layer 2: Primary Identity Gradient Overlay (75% at edges up to 90% behind central text) */}
@@ -560,10 +565,16 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             <div className="my-4 relative z-10 rounded-2xl overflow-hidden border border-white/15 shadow-md bg-[#0A3F3C]">
               <img
-                src="/src/assets/images/grievance_support_illustration_1794986259458.jpg"
+                src={grievanceSupportImg}
                 alt="مكتب استقبال الاستفسارات والتظلمات والدعم المباشر"
                 referrerPolicy="no-referrer"
-                className="w-full h-48 sm:h-52 object-cover object-center"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.includes('/assets/images/')) {
+                    target.src = '/assets/images/grievance_support_illustration_1794986259458.jpg';
+                  }
+                }}
+                className="w-full h-48 sm:h-52 object-cover object-center block"
               />
             </div>
 
